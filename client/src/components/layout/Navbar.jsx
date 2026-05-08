@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 const navLinks = [
   { path: '/', label: 'Home' },
   { path: '/query-lab', label: 'Query Lab' },
-  { path: '/entities', label: 'Tables' },
   { path: '/functions', label: 'Functions' },
   { path: '/trigger-demo', label: 'Triggers' }
 ];
