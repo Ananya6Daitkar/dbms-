@@ -66,10 +66,10 @@ export default function LandingPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate('/query-lab')}
             className="btn-primary text-lg px-8 py-3 inline-flex items-center gap-2"
           >
-            Explore Dashboard
+            Start Querying
             <ArrowRight className="w-5 h-5" />
           </motion.button>
         </motion.div>
