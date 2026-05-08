@@ -45,52 +45,68 @@ export async function runCustomFunction(req, res) {
       return res.status(400).json({ error: 'SQL is required' });
     }
     
-    // Smart split that respects dollar-quoted strings
+    // Improved parser for dollar-quoted strings
     const statements = [];
     let current = '';
-    let inDollarQuote = false;
-    let dollarTag = '';
+    let i = 0;
     
-    for (let i = 0; i < sql.length; i++) {
+    while (i < sql.length) {
       const char = sql[i];
-      current += char;
       
-      // Check for dollar quote start/end
+      // Check if we're at a dollar sign (potential start of dollar quote)
       if (char === '$') {
-        let tag = '$';
-        let j = i + 1;
-        while (j < sql.length && sql[j] !== '$') {
-          tag += sql[j];
-          j++;
+        // Find the closing $ of the tag
+        let tagEnd = i + 1;
+        while (tagEnd < sql.length && sql[tagEnd] !== '$') {
+          tagEnd++;
         }
-        if (j < sql.length) {
-          tag += '$';
+        
+        if (tagEnd < sql.length) {
+          // We found a complete dollar tag
+          const tag = sql.substring(i, tagEnd + 1);
+          current += tag;
+          i = tagEnd + 1;
           
-          if (!inDollarQuote) {
-            inDollarQuote = true;
-            dollarTag = tag;
-            current += sql.substring(i + 1, j + 1);
-            i = j;
-          } else if (tag === dollarTag) {
-            inDollarQuote = false;
-            dollarTag = '';
-            current += sql.substring(i + 1, j + 1);
-            i = j;
+          // Now find the matching closing tag
+          const closingTag = tag;
+          let foundClosing = false;
+          
+          while (i < sql.length && !foundClosing) {
+            if (sql[i] === '$') {
+              // Check if this matches our closing tag
+              const potentialTag = sql.substring(i, i + closingTag.length);
+              if (potentialTag === closingTag) {
+                current += closingTag;
+                i += closingTag.length;
+                foundClosing = true;
+              } else {
+                current += sql[i];
+                i++;
+              }
+            } else {
+              current += sql[i];
+              i++;
+            }
           }
+        } else {
+          current += char;
+          i++;
         }
-      }
-      
-      // Split on semicolon only if not inside dollar quotes
-      if (char === ';' && !inDollarQuote) {
-        const stmt = current.slice(0, -1).trim();
+      } else if (char === ';') {
+        // Semicolon outside of dollar quotes - end of statement
+        const stmt = current.trim();
         if (stmt.length > 0) {
           statements.push(stmt);
         }
         current = '';
+        i++;
+      } else {
+        current += char;
+        i++;
       }
     }
     
-    // Add remaining statement
+    // Add any remaining statement
     const lastStmt = current.trim();
     if (lastStmt.length > 0) {
       statements.push(lastStmt);
