@@ -75,6 +75,12 @@ api.interceptors.response.use(
     console.warn('⚠️  API request failed, using mock data:', error.message);
     
     const url = error.config?.url || '';
+    
+    // For custom queries, don't use mock data - propagate the error
+    if (url.includes('/queries/custom')) {
+      return Promise.reject(error);
+    }
+    
     const mockData = getMockDataForUrl(url, error.config);
     
     // Return mock data with a flag to show it's fake data
@@ -92,7 +98,8 @@ export const dashboardApi = {
 
 // Query API - run SQL queries
 export const queryApi = {
-  runQuery: (id) => api.post('/queries/run', { id })  // Run a query by ID
+  runQuery: (id) => api.post('/queries/run', { id }),  // Run a query by ID
+  runCustomQuery: (sql) => api.post('/queries/custom', { sql })  // Run a custom SQL query
 };
 
 // Entity API - get table data

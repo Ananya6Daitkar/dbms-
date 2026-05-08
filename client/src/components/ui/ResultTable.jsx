@@ -7,11 +7,11 @@ export default function ResultTable({ columns, rows, total, pageSize = 50, isLoa
   
   if (isLoading) {
     return (
-      <div className="glass-panel p-6">
+      <div className="bg-white rounded-lg border border-gray-200 p-6">
         <div className="animate-pulse space-y-4">
-          <div className="h-10 bg-gray-700 rounded"></div>
-          <div className="h-10 bg-gray-700 rounded"></div>
-          <div className="h-10 bg-gray-700 rounded"></div>
+          <div className="h-10 bg-gray-200 rounded"></div>
+          <div className="h-10 bg-gray-200 rounded"></div>
+          <div className="h-10 bg-gray-200 rounded"></div>
         </div>
       </div>
     );
@@ -19,7 +19,7 @@ export default function ResultTable({ columns, rows, total, pageSize = 50, isLoa
   
   if (!rows || rows.length === 0) {
     return (
-      <div className="glass-panel p-6 text-center text-gray-400">
+      <div className="bg-white rounded-lg border border-gray-200 p-6 text-center text-gray-600">
         No results found
       </div>
     );
@@ -43,33 +43,33 @@ export default function ResultTable({ columns, rows, total, pageSize = 50, isLoa
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="glass-panel overflow-hidden"
+      className="overflow-hidden rounded-lg border border-gray-200"
     >
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-neon-blue/10 border-b border-neon-blue/30">
+          <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
               {columns.map((col, index) => (
                 <th
                   key={index}
-                  className="px-6 py-3 text-left text-xs font-semibold text-neon-blue uppercase tracking-wider"
+                  className="px-6 py-3 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider"
                 >
                   {col}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-700">
+          <tbody className="bg-white divide-y divide-gray-200">
             {currentRows.map((row, rowIndex) => (
               <motion.tr
                 key={rowIndex}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: rowIndex * 0.05 }}
-                className="hover:bg-white/5 transition-colors"
+                className="hover:bg-gray-50 transition-colors"
               >
                 {columns.map((col, colIndex) => (
-                  <td key={colIndex} className="px-6 py-4 text-sm text-gray-300">
+                  <td key={colIndex} className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
                     {String(row[col] ?? '')}
                   </td>
                 ))}
@@ -80,8 +80,8 @@ export default function ResultTable({ columns, rows, total, pageSize = 50, isLoa
       </div>
       
       {totalPages > 1 && (
-        <div className="flex items-center justify-between px-6 py-4 border-t border-gray-700">
-          <div className="text-sm text-gray-400">
+        <div className="flex items-center justify-between px-6 py-4 bg-gray-50 border-t border-gray-200">
+          <div className="text-sm text-gray-700">
             Showing {startIndex + 1} to {Math.min(endIndex, rows.length)} of {rows.length} results
           </div>
           
@@ -89,19 +89,19 @@ export default function ResultTable({ columns, rows, total, pageSize = 50, isLoa
             <button
               onClick={handlePrevPage}
               disabled={currentPage === 1}
-              className="p-2 rounded-lg border border-gray-700 hover:border-neon-blue disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="p-2 rounded-lg border border-gray-300 text-gray-700 hover:border-indigo-500 hover:text-indigo-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
             
-            <span className="text-sm text-gray-400">
+            <span className="text-sm text-gray-700 font-medium">
               Page {currentPage} of {totalPages}
             </span>
             
             <button
               onClick={handleNextPage}
               disabled={currentPage === totalPages}
-              className="p-2 rounded-lg border border-gray-700 hover:border-neon-blue disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="p-2 rounded-lg border border-gray-300 text-gray-700 hover:border-indigo-500 hover:text-indigo-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronRight className="w-5 h-5" />
             </button>

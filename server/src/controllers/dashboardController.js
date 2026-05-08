@@ -3,32 +3,59 @@ import pool from '../db/pool.js';
 // Get KPI (Key Performance Indicator) numbers for dashboard
 export async function getKpis(req, res) {
   try {
-    // Query 1: Count total orders
+    // Query 1: Count total customers
+    const totalCustomersResult = await pool.query(
+      'SELECT COUNT(*) as count FROM Customer'
+    );
+    
+    // Query 2: Count active orders
     const activeOrdersResult = await pool.query(
       'SELECT COUNT(*) as count FROM Orders'
     );
     
-    // Query 2: Calculate average delivery time
-    // This calculates hours between order_date and payment_date, then converts to minutes
-    const avgDeliveryTimeResult = await pool.query(
-      'SELECT AVG(EXTRACT(EPOCH FROM (payment_date - order_date))/3600) as avg_hours FROM Orders o JOIN Payment p ON o.order_no = p.order_no'
+    // Query 3: Calculate total revenue
+    const totalRevenueResult = await pool.query(
+      'SELECT COALESCE(SUM(amount), 0) as total FROM Payment'
     );
     
-    // Query 3: Count total restaurants
-    const newRestaurantsResult = await pool.query(
+    // Query 4: Count menu items
+    const menuItemsResult = await pool.query(
+      'SELECT COUNT(*) as count FROM Menu_Item'
+    );
+    
+    // Query 5: Calculate average order value
+    const avgOrderValueResult = await pool.query(
+      'SELECT COALESCE(AVG(amount), 0) as avg FROM Payment'
+    );
+    
+    // Query 6: Count total restaurants
+    const totalRestaurantsResult = await pool.query(
       'SELECT COUNT(*) as count FROM Restaurant'
     );
     
+    // Query 7: Count delivery partners
+    const deliveryPartnersResult = await pool.query(
+      'SELECT COUNT(*) as count FROM Delivery_Partner'
+    );
+    
     // Extract values from query results
+    const totalCustomers = parseInt(totalCustomersResult.rows[0].count);
     const activeOrders = parseInt(activeOrdersResult.rows[0].count);
-    const avgDeliveryTime = Math.round(parseFloat(avgDeliveryTimeResult.rows[0].avg_hours || 28) * 60); // Convert hours to minutes
-    const newRestaurants = parseInt(newRestaurantsResult.rows[0].count);
+    const totalRevenue = Math.round(parseFloat(totalRevenueResult.rows[0].total));
+    const menuItems = parseInt(menuItemsResult.rows[0].count);
+    const avgOrderValue = Math.round(parseFloat(avgOrderValueResult.rows[0].avg));
+    const totalRestaurants = parseInt(totalRestaurantsResult.rows[0].count);
+    const deliveryPartners = parseInt(deliveryPartnersResult.rows[0].count);
     
     // Send response
     res.json({
+      totalCustomers,
       activeOrders,
-      avgDeliveryTime,
-      newRestaurants
+      totalRevenue,
+      menuItems,
+      avgOrderValue,
+      totalRestaurants,
+      deliveryPartners
     });
   } catch (error) {
     console.error('Error fetching KPIs:', error);
@@ -39,36 +66,36 @@ export async function getKpis(req, res) {
 // Get chart data for dashboard
 export async function getCharts(req, res) {
   try {
-    // Query 1: Get order count by month
-    const orderTrendResult = await pool.query(`
+    // Query 1: Get orders by date (last 7 days of data)
+    const ordersTrendResult = await pool.query(`
       SELECT 
-        TO_CHAR(order_date, 'Mon') as month,  -- Format date as "Jan", "Feb", etc.
-        COUNT(*) as orders                     -- Count orders per month
+        TO_CHAR(order_date, 'Mon DD') as date,
+        COUNT(*) as orders
       FROM Orders
-      GROUP BY TO_CHAR(order_date, 'Mon'), EXTRACT(MONTH FROM order_date)
-      ORDER BY EXTRACT(MONTH FROM order_date)
+      WHERE order_date IS NOT NULL
+      GROUP BY order_date
+      ORDER BY order_date
+      LIMIT 7
     `);
     
-    // Query 2: Get revenue by restaurant (top 10)
-    const revenueByRestaurantResult = await pool.query(`
+    // Query 2: Get revenue by city
+    const revenueByCityResult = await pool.query(`
       SELECT 
-        r.restaurant_name as name,
-        COALESCE(SUM(p.amount), 0) as revenue  -- Sum payment amounts, default to 0 if null
-      FROM Restaurant r
-      LEFT JOIN Menu_Item m ON r.restaurant_id = m.restaurant_id
-      LEFT JOIN Orders o ON o.order_no IN (
-        SELECT order_no FROM Payment WHERE order_no = o.order_no
-      )
+        c.city,
+        COALESCE(SUM(p.amount), 0) as revenue
+      FROM Customer c
+      LEFT JOIN Orders o ON c.customer_id = o.customer_id
       LEFT JOIN Payment p ON o.order_no = p.order_no
-      GROUP BY r.restaurant_name
+      WHERE c.city IS NOT NULL
+      GROUP BY c.city
       ORDER BY revenue DESC
-      LIMIT 10  -- Only top 10 restaurants
+      LIMIT 5
     `);
     
     // Send response with both chart datasets
     res.json({
-      orderTrend: orderTrendResult.rows,
-      revenueByRestaurant: revenueByRestaurantResult.rows
+      ordersTrend: ordersTrendResult.rows,
+      revenueByCity: revenueByCityResult.rows
     });
   } catch (error) {
     console.error('Error fetching charts:', error);

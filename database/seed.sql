@@ -384,3 +384,57 @@ INSERT INTO Ratings (item_id, rating_date, comment) VALUES
 (48, '2026-03-17', 'Warming ginger'),
 (49, '2026-03-17', 'Fudgy brownie'),
 (50, '2026-03-18', 'Beautiful cake');
+
+
+-- ============================================
+-- DML - DELETE EXAMPLES
+-- ============================================
+
+-- Note: These DELETE examples are commented out by default
+-- Uncomment them during demonstration to show DELETE operations
+
+-- Example 1: Delete a specific rating
+-- DELETE FROM Ratings WHERE rating_id = 50;
+
+-- Example 2: Delete ratings older than a specific date
+-- DELETE FROM Ratings WHERE rating_date < '2026-02-25';
+
+-- Example 3: Delete orders with invalid quantity (if any exist)
+-- DELETE FROM Orders WHERE quantity <= 0;
+
+-- Example 4: Delete a customer (must delete related records first due to foreign keys)
+-- First delete related records:
+-- DELETE FROM Payment WHERE order_no IN (SELECT order_no FROM Orders WHERE customer_id = 50);
+-- DELETE FROM Delivers WHERE order_no IN (SELECT order_no FROM Orders WHERE customer_id = 50);
+-- DELETE FROM Orders WHERE customer_id = 50;
+-- Then delete the customer:
+-- DELETE FROM Customer WHERE customer_id = 50;
+
+-- Example 5: Delete menu items that are not available
+-- DELETE FROM Menu_Item WHERE availability = FALSE;
+
+-- Example 6: Delete with condition - payments with 'Invalid' status
+-- DELETE FROM Payment WHERE status = 'Invalid';
+
+-- ============================================
+-- DEMONSTRATION SCRIPT FOR DELETE
+-- ============================================
+
+/*
+To demonstrate DELETE during presentation:
+
+1. Show current data:
+   SELECT * FROM Ratings ORDER BY rating_id DESC LIMIT 5;
+
+2. Delete a rating:
+   DELETE FROM Ratings WHERE rating_id = 50;
+
+3. Verify deletion:
+   SELECT * FROM Ratings ORDER BY rating_id DESC LIMIT 5;
+
+4. Show DELETE with condition:
+   DELETE FROM Ratings WHERE rating_date < '2026-02-22';
+
+5. Verify:
+   SELECT MIN(rating_date) FROM Ratings;
+*/

@@ -3,7 +3,6 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import FloatingBackground from './components/layout/FloatingBackground';
 import Navbar from './components/layout/Navbar';
 import LandingPage from './pages/LandingPage';
-import Dashboard from './pages/Dashboard';
 import QueryLab from './pages/QueryLab';
 import EntityBrowser from './pages/EntityBrowser';
 import FunctionsPage from './pages/FunctionsPage';
@@ -19,7 +18,6 @@ export default function App() {
         <div className="relative z-10">
           <Routes>
             <Route path="/" element={<LandingPage />} />
-            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/query-lab" element={<QueryLab />} />
             <Route path="/entities" element={<EntityBrowser />} />
             <Route path="/functions" element={<FunctionsPage />} />

@@ -4,13 +4,13 @@
 
 @layer base {
   body {
-    @apply bg-space-dark text-white font-sans antialiased;
+    @apply bg-gray-50 text-gray-900 font-sans antialiased;
   }
   
   /* Custom scrollbar styles */
   * {
     scrollbar-width: thin;
-    scrollbar-color: #3b82f6 transparent;
+    scrollbar-color: #6366f1 #e5e7eb;
   }
   
   *::-webkit-scrollbar {
@@ -19,35 +19,75 @@
   }
   
   *::-webkit-scrollbar-track {
-    background: transparent;
+    background: #e5e7eb;
   }
   
   *::-webkit-scrollbar-thumb {
-    background: #3b82f6;
+    background: #6366f1;
     border-radius: 4px;
   }
   
   *::-webkit-scrollbar-thumb:hover {
-    background: #2563eb;
+    background: #4f46e5;
   }
 }
 
 @layer components {
-  .glass-panel {
-    @apply bg-glass-white backdrop-blur-glass border border-glass-border rounded-xl;
+  .card {
+    @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6;
   }
   
-  .neon-text {
-    @apply text-neon-blue;
+  .card-hover {
+    @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6 
+           transition-all hover:shadow-md hover:border-indigo-300 cursor-pointer;
   }
   
-  .btn-neon {
-    @apply px-6 py-3 rounded-lg bg-neon-blue text-white font-semibold 
-           hover:bg-blue-600 transition-all duration-200;
+  .btn-primary {
+    @apply px-6 py-2.5 rounded-lg bg-indigo-600 text-white font-medium 
+           hover:bg-indigo-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed;
   }
   
-  .btn-neon-outline {
-    @apply px-6 py-3 rounded-lg border-2 border-neon-blue text-neon-blue font-semibold
-           hover:bg-neon-blue hover:text-white transition-all duration-200;
+  .btn-secondary {
+    @apply px-6 py-2.5 rounded-lg bg-white text-gray-700 font-medium border border-gray-300
+           hover:border-indigo-400 hover:text-indigo-600 transition-colors;
+  }
+  
+  .input-field {
+    @apply px-4 py-2.5 bg-white border-2 border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-500
+           focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none;
+  }
+  
+  .badge {
+    @apply px-3 py-1 rounded-full text-sm font-medium;
+  }
+  
+  .badge-primary {
+    @apply bg-indigo-100 text-indigo-700;
+  }
+  
+  .badge-success {
+    @apply bg-green-100 text-green-700;
+  }
+  
+  .badge-warning {
+    @apply bg-yellow-100 text-yellow-700;
+  }
+  
+  .badge-purple {
+    @apply bg-purple-100 text-purple-700;
+  }
+  
+  /* Ensure all inputs and selects have visible text */
+  input, textarea, select {
+    @apply text-gray-900;
+  }
+  
+  input::placeholder, textarea::placeholder {
+    @apply text-gray-500;
+  }
+  
+  /* Ensure select options are visible */
+  select option {
+    @apply text-gray-900 bg-white;
   }
 }

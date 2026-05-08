@@ -1,8 +1,9 @@
 import express from 'express';
-import { runQuery } from '../controllers/queryController.js';
+import { runQuery, runCustomQuery } from '../controllers/queryController.js';
 
 const router = express.Router();
 
 router.post('/run', runQuery);
+router.post('/custom', runCustomQuery);
 
 export default router;
